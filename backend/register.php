@@ -6,7 +6,8 @@ header("Content-Type: application/json;");
 
 
 include 'config.php';
-$user = json_decode(file_get_contents('php://input')); // to make php read this as an object from react
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $user = json_decode(file_get_contents('php://input')); // to make php read this as an object from react
         
         $db = crud::connect()->prepare("INSERT INTO users ( first_name, last_name, email, password, Created_at) VALUES (:first_name, :last_name ,:email, :password ,:created)");
         $created_at = date('Y-m-d');
@@ -17,9 +18,24 @@ $user = json_decode(file_get_contents('php://input')); // to make php read this 
         $db->bindValue(':password' , $user->password);
         $db->bindValue(':created' , $created_at);
         if($db -> execute()) {
-            $response = ['status' =>1, 'message'=>"Record updated succcesfully"];
+            $response = ['status' =>1, 'message'=>"Record created succcesfully"];
         }else{
-            $response = ['status' =>0, 'message'=>"Record Faild to update"];
+            $response = ['status' =>0, 'message'=>"Record Faild to create"];
         }
+        // echo json_encode($response); // to send this message as a Json (you can read it in inspect -- Newtwork)
+
+
+        $db = crud::connect()->prepare("Select * from users WHERE email = :email AND password = :password");
+        $db->bindValue(':email' , $user->email);
+        $db->bindValue(':password' , $user->password);
+
+        if($db -> execute()) {
+            $response ['userinfo'] = $db->fetch(PDO::FETCH_ASSOC);
+        }else{
+            $response ['userinfo']="Record Faild to find";
+        }
+        // $response = $db->fetch(PDO::FETCH_ASSOC);
         echo json_encode($response); // to send this message as a Json (you can read it in inspect -- Newtwork)
+    }
+
 ?>

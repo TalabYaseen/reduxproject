@@ -4,9 +4,13 @@ import { toast,ToastContainer } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
+import { IsLoggedInactions } from '../reducers/IsLoggedIn';
+import { useDispatch } from 'react-redux';
 
 
 const Register = () => {
+
+  const dispatch = useDispatch();
  
   const navigate = useNavigate();
 
@@ -15,14 +19,13 @@ const Register = () => {
     const [last_name, lastnamechange] = useState("");
     const [email, emailchange] = useState("");
     const [password, passwordchange] = useState("");
-    const [phone, phonechange] = useState("");
     const [error , setError] = useState(false);
 
     const handleSubmit =(e)=>{
 
       e.preventDefault(); 
        
-      const inputs ={ first_name , last_name , email , password , phone}
+      const inputs ={ first_name , last_name , email , password }
 
      
       if (first_name.length===0 || last_name.length===0 || email.length===0 || password.length===0 || !(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,4}$/.test(email)) )  {
@@ -34,15 +37,14 @@ const Register = () => {
    
       console.log(inputs);
      axios.post('http://localhost/reduxproject/backend/register.php', inputs ).then(function(response){
-      console.log(response.data); 
       if (response.data.status == 1){
       toast.success('Account Created Successfully 👌');
-      let isloggedin = JSON.stringify(true)
-      sessionStorage.setItem('isloggedin', isloggedin);
-      navigate('/profile');}
-     })
-     
-    
+      sessionStorage.setItem("userinfo",JSON.stringify(response.data.userinfo) );
+      dispatch (IsLoggedInactions.login());
+      // sessionStorage.clear();
+      navigate('/allbooks');
+    }
+  })
     }}
 
 
@@ -98,17 +100,6 @@ const Register = () => {
                         <label style ={{color:'red'}}>Lastname is required</label>:""}
                       </div>
 
-                      {/* <div className="form-group">
-                        <input type="text" className="form-control mb-0"  placeholder="Phone Number" 
-                         name="phone"  value={phone} onChange={e => phonechange(e.target.value)} 
-                        />
-                          {error && phone.length === 0 &&
-                          <label style ={{color:'red'}}>Phone is required</label>}
-                          {phone.length > 0 && !(/^[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(phone)) && (
-                          <label style ={{color:'red'}}>Phone Number must be at least 10 numbers</label> 
-                            )}
-                      </div> */}
-
                       <div className="form-group">
                         <input type="email" className="form-control mb-0" placeholder="Email"
                         name="email" value={email} onChange={e => emailchange(e.target.value)}
@@ -144,7 +135,7 @@ const Register = () => {
                       </div>
 
                       <div className="sign-info">
-                        <span className="dark-color d-inline-block line-height-2">Already Have Account ?<Link to={'/'}> Log in</Link></span>
+                        <span className="dark-color d-inline-block line-height-2">Already Have Account ?<Link to={'/login'}> Log in</Link></span>
                       </div>
                     </form>
 

@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import IsLoggedInSlice from '../reducers/IsLoggedIn';
 
 export const store = configureStore({
-  reducer: {
-  },
+  reducer: IsLoggedInSlice.reducer
 });
+

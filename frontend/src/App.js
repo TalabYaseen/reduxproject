@@ -20,11 +20,20 @@ import './assets/vendor/line-awesome/dist/font-awesome-line-awesome/css/all.min.
 import './assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css';
 import ErrorMessage from "./pages/messageLogin";
 import Profile from './pages/Profile';
+import AddBook from './pages/AddBook';
+import MyBooks from './pages/MyBooks';
+import Login from './pages/Login';
+
+// redux assets
+import { Provider } from 'react-redux';
+import  {store}  from './app/store';
+import { useSelector, useDispatch } from 'react-redux';
 
 function App() {
-  const isLoggedin = sessionStorage.getItem('isloggedin');
-  let isLoggedIn = JSON.parse(isLoggedin);
+  let isLoggedIn = useSelector((state) => state.IsLoggedIn);
+  console.log(isLoggedIn)
   return (
+    <Provider store={store}>
     <div className="App">
       <ToastContainer
         position="top-center"
@@ -42,22 +51,28 @@ function App() {
       {isLoggedIn ? (
           <Routes>
             <Route exact path="/" element={<Register />} />
+            <Route exact path="/addbook" element={<AddBook />} />
             <Route exact path="/Register" element={<Register />} />
-            <Route exact path="/Profile" element={<Profile></Profile>} />
+            <Route exact path="/allbooks" element={<Profile></Profile>} />
+            <Route exact path="/mybooks" element={<MyBooks></MyBooks>} />
+            <Route exact path="/login" element={<Login></Login>} />
           </Routes>
         )
           :
           (
             <Routes>
-              <Route exact path="/Register" element={<Register />} />
+              <Route exact path="/" element={<Register />} />
               <Route exact path="/home" element={<ErrorMessage />} />
-              <Route exact path="/Profile" element={<ErrorMessage />} />
+              <Route exact path="/allbooks" element={<ErrorMessage />} />
               <Route exact path="/EditProfile/:id/edit" element={<ErrorMessage />} />
+              <Route exact path="/addbokk" element={<ErrorMessage />} />
+              <Route exact path="/login" element={<Login></Login>} />
             </Routes>
           )
         }
       </Router>
     </div>
+    </Provider>
   );
 }
 
